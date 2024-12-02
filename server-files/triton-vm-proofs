@@ -1,0 +1,60 @@
+# Put this file in /etc/nginx/sites-available/
+
+limit_req_zone $binary_remote_addr zone=file_rate_limit:30m rate=35r/s;
+limit_req_zone $server_name zone=global_rate_limit:30m rate=35r/s;
+limit_req_zone $binary_remote_addr$request_uri zone=per_user_url_limit:30m rate=3r/m;
+
+server {
+    listen 42580;       # IPv4 listener
+    listen [::]:42580;  # IPv6 listener
+    server_name <ip-or-url>;
+
+    # Block access to the root URL
+    location = / {
+        return 404;  # Return 404 for the root URL
+    }
+
+    # Serve .proof files from the directory
+    location ~* ^/[a-z0-9]+\.proof$ {
+        alias /var/www/triton-vm-proofs/;
+        autoindex off;
+        autoindex_exact_size off;
+        autoindex_localtime off;
+
+	# Limit allowed HTTP methods to GET
+        limit_except GET {
+            deny all;  # Block all other methods
+        }
+
+	# Ensure no trailing slash is appended to the URL
+        try_files $uri =404;
+
+        # Per-client rate limit
+        limit_req zone=file_rate_limit burst=24 nodelay;
+
+        # Global rate limit
+        limit_req zone=global_rate_limit burst=24 nodelay;
+
+	# Ensure same proof is not requested more than once per minute by each IP
+	# But if tests are run in parallel you may request same proof many times,
+	# and we allow for that with a high burst value here.
+	limit_req zone=per_user_url_limit burst=24 nodelay;
+    }
+
+    # Restrictive robots.txt
+    location = /robots.txt {
+        return 200 "User-agent: *\nDisallow: /\n";
+        add_header Content-Type text/plain;
+
+	# Limit allowed HTTP methods to GET
+        limit_except GET {
+            deny all;  # Block all other methods
+        }
+
+        # Per-client rate limit
+        limit_req zone=file_rate_limit burst=1 nodelay;
+
+        # Global rate limit
+        limit_req zone=global_rate_limit burst=1 nodelay;
+    }
+}

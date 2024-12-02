@@ -1,0 +1,16 @@
+# Store this file as `/etc/systemd/system/sync-triton-vm-proofs.service`
+[Unit]
+Description=Sync Local Directory to Remote VPN
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/bin/bash /home/<user>/bin/watch_and_sync.sh
+Restart=always
+User=<user>
+Group=<user>
+Environment="DISPLAY=:0"
+Environment="XDG_RUNTIME_DIR=/run/user/$(id -u)"
+
+[Install]
+WantedBy=default.target
