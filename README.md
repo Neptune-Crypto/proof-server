@@ -37,7 +37,7 @@ Then add the missing values to the files: username, ip or URLs, directory paths 
 8. Make the directory for the proofs, and set correct permissions
 - `sudo mkdir -p /var/www/triton-vm-proofs/`
 - `sudo chown -R www-data:www-data /var/www/triton-vm-proofs`
-- `sudo chmod -R 755 /var/www/triton-vm-proofs`
+- `sudo chmod -R 775 /var/www/triton-vm-proofs`
 
 9. Enable the webserver defined in step 1.
 - `sudo ln -s /etc/nginx/sites-available/triton-vm-proofs /etc/nginx/sites-enabled/`
@@ -45,6 +45,9 @@ Then add the missing values to the files: username, ip or URLs, directory paths 
 10. Test nginx for syntax errors and reload nginx
 - `sudo nginx -t`
 - `sudo systemctl reload nginx`
+
+11. Add your ssh user to group www-data so it can write proof files
+- `sudo usermod -g www-data <user>`
 
 Other relevant commands
 Check log of proof-syncing service, on workstation
