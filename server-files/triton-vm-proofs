@@ -4,6 +4,13 @@ limit_req_zone $binary_remote_addr zone=file_rate_limit:30m rate=35r/s;
 limit_req_zone $server_name zone=global_rate_limit:30m rate=35r/s;
 limit_req_zone $binary_remote_addr$request_uri zone=per_user_url_limit:30m rate=3r/m;
 
+
+# Last value "$http_test_name" prints value of HTTP header 'Test-Name'
+# Which the proof-fetcher sets to communicate which test is running.
+log_format bytes_log '$remote_addr - $remote_user [$time_local] '
+                     '"$request" $status $body_bytes_sent '
+                     '"$http_referer" "$http_user_agent" "$http_test_name"';
+
 server {
     listen 42580;       # IPv4 listener
     listen [::]:42580;  # IPv6 listener
@@ -57,4 +64,8 @@ server {
         # Global rate limit
         limit_req zone=global_rate_limit burst=1 nodelay;
     }
+
+    # access_log /var/log/nginx/access.log;
+    access_log /var/log/nginx/access.triton-vm-proofs.log bytes_log;
+    error_log /var/log/nginx/error.triton-vm-proofs.log;
 }

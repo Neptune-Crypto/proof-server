@@ -8,7 +8,7 @@ and "inotify" to upload the proof files from the workstation to the server.
 ### Linux
 
 #### Workstation, where the proofs are generated
-1. Store the four files where described in the files, two nginx files on the server, and two files on the workstation. 
+1. Store the three files where described in the files, one nginx file on the server, and two files on the workstation. 
 Then add the missing values to the files: username, ip or URLs, directory paths etc.
 
 2. Install programs for automatically sending proof files from workstation to server:
@@ -37,10 +37,10 @@ Then add the missing values to the files: username, ip or URLs, directory paths 
 8. Make the directory for the proofs, and set correct permissions
 - `sudo mkdir -p /var/www/triton-vm-proofs/`
 - `sudo chown -R www-data:www-data /var/www/triton-vm-proofs`
-- `sudo chmod -R 755 /var/www/files`
+- `sudo chmod -R 755 /var/www/triton-vm-proofs`
 
 9. Enable the webserver defined in step 1.
-- `sudo ln -s /etc/nginx/sites-available/fileserver /etc/nginx/sites-enabled/`
+- `sudo ln -s /etc/nginx/sites-available/triton-vm-proofs /etc/nginx/sites-enabled/`
 
 10. Test nginx for syntax errors and reload nginx
 - `sudo nginx -t`
@@ -51,7 +51,7 @@ Check log of proof-syncing service, on workstation
 - `journalctl -u sync-triton-vm-proofs.service -f`
 
 Check log of proof server, on server
-- `tail -f /var/log/nginx/access.log`
+- `tail -f /var/log/nginx/access.triton-vm-proofs.log`
 
 Summarize total data sent, on server
-- `awk '{sum += $10} END {print sum / (1024 * 1024) " MB"}' /var/log/nginx/access.log`
+- `awk '{sum += $10} END {print sum / (1024 * 1024) " MB"}' /var/log/nginx/access.triton-vm-proofs.log`
