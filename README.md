@@ -1,8 +1,9 @@
 # proof-server
-Resources for running a proof server, serving Triton VM proofs for faster test suite execution.
+Resources for running a proof server, serving Triton VM proofs and other cryptographic data for faster test suite execution.
 
 The setup uses nginx to share the proofs, in cleartext, through HTTP. And it uses "rsync"
-and "inotify" to upload the proof files from the workstation to the server.
+and "inotify" to upload the proof files from the workstation to the server. Due to scope
+creep, this system now also serves block data.
 
 ## Setup
 ### Linux
