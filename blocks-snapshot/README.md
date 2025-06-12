@@ -40,11 +40,15 @@ sudo systemctl start transmission-daemon
 Ensure these lines are set:
 ```json
 "rpc-enabled": true,
+"rpc-bind-address": "127.0.0.1",
 "rpc-authentication-required": false,
 "download-dir": "/var/lib/transmission-daemon/downloads",
 "incomplete-dir-enabled": false,
-"watch-dir-enabled": false
+"watch-dir-enabled": false,
 ```
+
+Make sure the RPC can only be accessed from localhost. Otherwise, you **will** be hacked. You can also set an RPC password
+if you're paranoid or if you don't want local (non-sudo) users on your machine to access the transmission instance.
 
 Restart the daemon:
 ```bash
