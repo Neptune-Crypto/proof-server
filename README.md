@@ -26,6 +26,7 @@ Then add the missing values to the files: username, ip or URLs, directory paths 
 5. Start the systemd daemon, you should have configured during step 1.
 - `sudo systemctl daemon-reload`
 - `sudo systemctl enable sync-triton-vm-proofs.service`
+- `sudo systemctl start sync-triton-vm-proofs.service`
 
 6. Verify status of syncing service
 - `sudo systemctl status sync-triton-vm-proofs.service`
