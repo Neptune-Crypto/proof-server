@@ -22,7 +22,7 @@ if ! file "$TORRENT_FILE" | grep -q "BitTorrent"; then
 fi
 
 # Check if there are torrents to remove
-TORRENT_LIST=$(transmission-remote --list | grep -v "ID\|Sum:" | awk '{print $1}' | sed 's/\*//g' | grep -E '^[0-9]+$')
+TORRENT_LIST=$(transmission-remote --list || true | grep -v "ID\|Sum:" | awk '{print $1}' | sed 's/\*//g' | grep -E '^[0-9]+$')
 
 if [ -n "$TORRENT_LIST" ]; then
     # Remove existing torrents
