@@ -5,5 +5,5 @@
 inotifywait -m -r -e create -e moved_to <neptune-core-directory>/test_data/ |
 while read path action file; do
     echo "New file detected: $file. Syncing..."
-    rsync -avz --ignore-existing --no-perms --no-group --no-times <neptune-core-directory>/test_data/ <user>@<ip-or-url-of-server>:/var/www/triton-vm-proofs/
+    rsync -avz -e "ssh -i /home/<user>/.ssh/rsync-triton-vm" --ignore-existing --no-perms --no-group --no-times <neptune-core-directory>/test_data/ <user>@<ip-or-url-of-server>:/var/www/triton-vm-proofs/
 done

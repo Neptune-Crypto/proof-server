@@ -16,9 +16,14 @@ Then add the missing values to the files: username, ip or URLs, directory paths 
 - `sudo apt update`
 - `sudo apt install rsync inotify-tools`
 
-3. Set up SSH key-based authentication between your desktop and the remote machine:
-- `ssh-keygen -t ed25519`
-- `ssh-copy-id user@server`
+3. Set up SSH key-based authentication between your desktop and the remote machine. Use these instructions to set up a special-purpose SSH key that is only allowed to execute rsync-related commands on the remote server.
+- `ssh-keygen -t ed25519 -N "" -f ~/.ssh/rsync-triton-vm`
+- `cat ~/.ssh/rsync-triton-vm.pub` and copy the public key (the entire line).
+- On the remove server, add the following line to `~/.ssh/authorized_keys`:
+
+```
+command="/usr/bin/rrsync /var/www/triton-vm-proofs",no-agent-forwarding,no-port-forwarding,no-pty ssh-ed25519 AAA... user@desktop-name; rsync-only key
+```
 
 4. Make the `watch_and_sync_script.sh` script executable
 - `chmod +x ~/bin/watch_and_sync.sh`
@@ -51,7 +56,7 @@ Then add the missing values to the files: username, ip or URLs, directory paths 
 11. Add your ssh user to group www-data so it can write proof files
 - `sudo usermod -g www-data <user>`
 
-Other relevant commands
+#### Other relevant commands
 Check log of proof-syncing service, on workstation
 - `journalctl -u sync-triton-vm-proofs.service -f`
 
