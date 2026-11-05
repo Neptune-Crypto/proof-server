@@ -21,19 +21,24 @@ server {
         return 404;  # Return 404 for the root URL
     }
 
-    # Serve .proof files and blk files from the directory
-    location ~* ^/([a-z0-9]+\.proof|blk\d+\.dat)$ {
+    # Serve .proof files and blk files from the file server's root directory, or from <network>/<sub-dir>/file.
+    location ~* ^/((\w+(-\d+)?/)?[\w-]+/)?([a-z0-9]+\.proof|blk\d+\.dat|latest-snapshot.torrent)$ {
         alias /var/www/triton-vm-proofs/;
         autoindex off;
         autoindex_exact_size off;
         autoindex_localtime off;
+        disable_symlinks on;
 
-	# Limit allowed HTTP methods to GET
+        # Hardening response headers
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-Frame-Options "DENY" always;
+
+	    # Limit allowed HTTP methods to GET
         limit_except GET {
             deny all;  # Block all other methods
         }
 
-	# Ensure no trailing slash is appended to the URL
+	    # Ensure no trailing slash is appended to the URL
         try_files $uri =404;
 
         # Per-client rate limit
@@ -42,10 +47,10 @@ server {
         # Global rate limit
         limit_req zone=global_rate_limit burst=24 nodelay;
 
-	# Ensure same proof is not requested more than once per minute by each IP
-	# But if tests are run in parallel you may request same proof many times,
-	# and we allow for that with a high burst value here.
-	limit_req zone=per_user_url_limit burst=24 nodelay;
+	    # Ensure same proof is not requested more than once per minute by each IP
+	    # But if tests are run in parallel you may request same proof many times,
+	    # and we allow for that with a high burst value here.
+	    limit_req zone=per_user_url_limit burst=24 nodelay;
     }
 
     # Restrictive robots.txt
